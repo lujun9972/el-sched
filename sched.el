@@ -57,14 +57,15 @@
 Returns the event which can be used to remove it,if necessary. "
   (let ((event (list time priority action arguments)))
     (setf (scheduler-queue scheduler)
-          (cons event (scheduler-queue scheduler)))))
+          (sort (cons event (scheduler-queue scheduler)) #'sched-list<))
+    event))
 
 (defun sched-enter (scheduler delay priority action &rest arguments)
   "A variant that specifies the time as a relative time.
 
 This is actually the more commonly used interface. "
-  (let (time  (+ delay (funcall (scheduler-timefunc scheduler))))
-    (apply #'sched-enterabs scheduler tim priority action arguments)))
+  (let ((time  (+ delay (funcall (scheduler-timefunc scheduler)))))
+    (apply #'sched-enterabs scheduler time priority action arguments)))
 
 (defun sched-cancel (scheduler event)
   "Remove an event from the queue.
